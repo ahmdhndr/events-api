@@ -1,18 +1,12 @@
 import type { Request, Response } from "express";
 
-import express from "express";
+import createApp from "@/lib/create-app";
+import notFound from "@/middlewares/not-found";
+import { onError } from "@/middlewares/on-error";
 
-import { errorHandler } from "@/middlewares/error-handler";
-import { AppError } from "@/utils/app-error";
+import { AppError } from "./utils/app-error";
 
-import { logger } from "./middlewares/pino-logger";
-import serveEmojiFavicon from "./middlewares/serve-emoji-favicon";
-
-const app = express();
-
-app.use(express.json());
-app.use(serveEmojiFavicon("🚀"));
-app.use(logger());
+const app = createApp();
 
 app.get("/", (req: Request, res: Response) => {
   req.log.info("Pino Logger");
@@ -22,9 +16,10 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.get("/error", (_req, _res) => {
-  throw new AppError("Oh no!", 400);
+  throw new AppError("Oh no!", 422);
 });
 
-app.use(errorHandler);
+app.use(notFound);
+app.use(onError);
 
 export default app;
