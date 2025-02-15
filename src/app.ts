@@ -1,22 +1,22 @@
-import type { Request, Response } from "express";
-
 import createApp from "@/lib/create-app";
 import notFound from "@/middlewares/not-found";
 import { onError } from "@/middlewares/on-error";
-
-import { AppError } from "./utils/app-error";
+import index from "@/routes/index.route";
 
 const app = createApp();
 
-app.get("/", (req: Request, res: Response) => {
-  req.log.info("Pino Logger");
+const routes = [
+  index,
+] as const;
+
+app.get("/", (req, res) => {
   res.json({
-    message: "Hello world!",
+    message: "Hello World!",
   });
 });
 
-app.get("/error", (_req, _res) => {
-  throw new AppError("Oh no!", 422);
+routes.forEach((route) => {
+  app.use("/api", route);
 });
 
 app.use(notFound);
