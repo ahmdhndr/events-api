@@ -1,12 +1,14 @@
 import createApp from "@/lib/create-app";
 import notFound from "@/middlewares/not-found";
 import { onError } from "@/middlewares/on-error";
+import auth from "@/routes/auth/auth.index";
 import index from "@/routes/index.route";
 
 const app = createApp();
 
 const routes = [
   index,
+  auth,
 ] as const;
 
 app.get("/", (req, res) => {

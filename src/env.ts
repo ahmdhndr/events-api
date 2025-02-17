@@ -1,30 +1,27 @@
-import type { ZodError } from "zod";
-
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";
-import { z } from "zod";
+import OmniConfig from "omniconfig.js";
+import * as yup from "yup";
 
 expand(config());
 
-const EnvSchema = z.object({
-  NODE_ENV: z.string(),
-  PORT: z.coerce.number().default(5000),
+const YupEnvSchema = yup.object({
+  NODE_ENV: yup.string().required(),
+  PORT: yup.number().default(5000),
+  MONGO_URI: yup.string().required(),
+  SECRET: yup.string().required(),
 });
 
-export type env = z.infer<typeof EnvSchema>;
+export type env = yup.InferType<typeof YupEnvSchema>;
 
 // eslint-disable-next-line import/no-mutable-exports, ts/no-redeclare
 let env: env;
 
-try {
-  // eslint-disable-next-line node/no-process-env
-  env = EnvSchema.parse(process.env);
-}
-catch (e) {
-  const error = e as ZodError;
-  console.error("❌ invalid env:");
-  console.error(error.flatten().fieldErrors);
-  process.exit(1);
-}
+env = OmniConfig
+  .withYup(YupEnvSchema)
+  .useEnvironmentVariables({
+    dotEnv: ".env",
+  })
+  .resolveSync({ exitCode: 1 });
 
 export default env;

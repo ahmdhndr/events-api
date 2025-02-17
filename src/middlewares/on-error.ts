@@ -9,14 +9,15 @@ export function onError(err: Error, req: Request, res: Response, _next: NextFunc
 
   // Jika error bukan instance dari AppError, buat error baru
   if (!(err instanceof AppError)) {
-    customError = new AppError("Internal Server Error", Number(INTERNAL_SERVER_ERROR));
+    customError = new AppError("Internal Server Error", Number(INTERNAL_SERVER_ERROR), true, "error");
   }
 
   const appError = customError as AppError;
 
   res.status(appError.statusCode).json({
-    success: false,
+    status: appError.status,
     message: appError.message,
+    data: null,
     ...(env.NODE_ENV === "development" && { stack: appError.stack }),
   });
 }
