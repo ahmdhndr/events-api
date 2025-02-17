@@ -1,0 +1,8 @@
+import crypto from "node:crypto";
+
+import env from "@/env";
+
+export default function encryptPassword(password: string) {
+  const encryptedPassword = crypto.pbkdf2Sync(password, env.SECRET, 1000, 64, "sha512").toString("hex");
+  return encryptedPassword;
+}
