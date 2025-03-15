@@ -3,6 +3,7 @@
     "target": "ESNext",
     "jsx": "react-jsx",
     "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "paths": {
       "@/*": ["./src/*"]
     },
@@ -11,6 +12,7 @@
     ],
     "strict": true,
     "outDir": "./dist",
+    "esModuleInterop": true,
     "skipLibCheck": true
   },
   "tsc-alias": {
