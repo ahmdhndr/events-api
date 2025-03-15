@@ -10,7 +10,10 @@
       "node"
     ],
     "strict": true,
-    // "verbatimModuleSyntax": true,
+    "outDir": "./dist",
     "skipLibCheck": true
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true
   }
 }
