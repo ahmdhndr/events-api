@@ -8,14 +8,19 @@ import { users } from "@/db/schemas";
 import { generateToken } from "@/lib/jwt";
 import { AppError } from "@/utils/app-error";
 import { emailRegex } from "@/utils/email-regex";
-import encryptPassword from "@/utils/encrypt-password";
+import encrypt from "@/utils/encrypt";
 
 const registerSchema = yup.object({
   identifier: yup.string().when("isLogin", (isLogin, schema) => isLogin ? schema.optional() : schema.required()),
   fullName: yup.string().when("isLogin", (isLogin, schema) => isLogin ? schema.optional() : schema.required()),
   username: yup.string().when("isLogin", (isLogin, schema) => isLogin ? schema.optional() : schema.required()),
   email: yup.string().matches(emailRegex, "Must be a valid email!").when("isLogin", (isLogin, schema) => isLogin ? schema.optional() : schema.required()),
-  password: yup.string().required(),
+  password: yup.string()
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/\d/, "Password must contain at least one number")
+    .matches(/[@$!%*?&]/, "Password must contain at least one special character")
+    .required("Password is required"),
   confirmPassword: yup.string().oneOf([yup.ref("password"), ""], "Password not matched!").when("isLogin", (isLogin, schema) => isLogin ? schema.optional() : schema.required()),
   isLogin: yup.boolean().default(false),
 });
@@ -24,13 +29,9 @@ export async function register(req: Request, res: Response) {
   try {
     const { fullName, username, email, password } = await registerSchema.validate({ ...req.body, isLogin: false });
 
-    const existingUser = await users.findOne({ email });
+    const existingUser = await users.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      res.status(409).json({
-        status: "failed",
-        message: "Email already taken.",
-        data: null,
-      });
+      throw new AppError("Email or username already taken.", 409);
     }
 
     const createdUser = await users.create({
@@ -54,11 +55,24 @@ export async function register(req: Request, res: Response) {
     });
   }
   catch (error) {
-    const err = error as unknown as AppError;
+    let statusCode = 500;
+    let status = "error";
+    let message = "Internal Server Error";
 
-    res.status(err.statusCode).json({
-      status: "failed",
-      message: err.message,
+    if (error instanceof AppError) {
+      statusCode = error.statusCode;
+      status = "failed";
+      message = error.message;
+    }
+    else if (error instanceof yup.ValidationError) {
+      statusCode = 400;
+      status = "failed";
+      message = error.message;
+    }
+
+    res.status(statusCode).json({
+      status,
+      message,
       data: null,
     });
   }
@@ -68,12 +82,12 @@ export async function login(req: Request, res: Response) {
   try {
     const { identifier, password } = await registerSchema.validate({ ...req.body, isLogin: true });
 
-    const userByIdentifier = await users.findOne({ $or: [{ email: identifier }, { username: identifier }] });
+    const userByIdentifier = await users.findOne({ $or: [{ email: identifier }, { username: identifier }], isActive: true });
     if (!userByIdentifier) {
       throw new AppError("User not found.", 404);
     }
 
-    const validatePassword: boolean = encryptPassword(password) === userByIdentifier?.password;
+    const validatePassword: boolean = encrypt(password) === userByIdentifier?.password;
     if (!validatePassword) {
       throw new AppError("Wrong identifier or password.", 403);
     }
@@ -96,11 +110,24 @@ export async function login(req: Request, res: Response) {
     });
   }
   catch (error) {
-    const err = error as unknown as AppError;
+    let statusCode = 500;
+    let status = "error";
+    let message = "Internal Server Error";
 
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
+    if (error instanceof AppError) {
+      statusCode = error.statusCode;
+      status = "failed";
+      message = error.message;
+    }
+    else if (error instanceof yup.ValidationError) {
+      statusCode = 400;
+      status = "failed";
+      message = error.message;
+    }
+
+    res.status(statusCode).json({
+      status,
+      message,
       data: null,
     });
   }
@@ -118,11 +145,62 @@ export async function me(req: IReqUser, res: Response) {
     });
   }
   catch (error) {
-    const err = error as unknown as AppError;
+    let statusCode = 500;
+    let status = "error";
+    let message = "Internal Server Error";
 
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
+    if (error instanceof AppError) {
+      statusCode = error.statusCode;
+      status = "failed";
+      message = error.message;
+    }
+    else if (error instanceof yup.ValidationError) {
+      statusCode = 400;
+      status = "failed";
+      message = error.message;
+    }
+
+    res.status(statusCode).json({
+      status,
+      message,
+      data: null,
+    });
+  }
+}
+
+export async function activation(req: Request, res: Response) {
+  try {
+    const { code } = req.body;
+
+    const user = await users.findOneAndUpdate({
+      activationCode: code,
+    }, { isActive: true }, { new: true });
+
+    res.json({
+      status: "success",
+      message: "user successfully activated",
+      data: { user },
+    });
+  }
+  catch (error) {
+    let statusCode = 500;
+    let status = "error";
+    let message = "Internal Server Error";
+
+    if (error instanceof AppError) {
+      statusCode = error.statusCode;
+      status = "failed";
+      message = error.message;
+    }
+    else if (error instanceof yup.ValidationError) {
+      statusCode = 400;
+      status = "failed";
+      message = error.message;
+    }
+
+    res.status(statusCode).json({
+      status,
+      message,
       data: null,
     });
   }

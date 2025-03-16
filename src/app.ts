@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import createApp from "@/lib/create-app";
 import notFound from "@/middlewares/not-found";
 import { onError } from "@/middlewares/on-error";
-import auth from "@/routes/auth/auth.index";
+import auth from "@/routes/auth/auth.route";
 import index from "@/routes/index.route";
 
 const app = createApp();
