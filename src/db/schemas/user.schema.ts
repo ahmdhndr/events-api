@@ -2,7 +2,11 @@ import mongoose, { Schema } from "mongoose";
 
 import type { IUser } from "@/shared/types/user";
 
-import encryptPassword from "@/utils/encrypt-password";
+import env from "@/env";
+import { renderMailHtml, sendMail } from "@/lib/mail";
+import encrypt from "@/utils/encrypt";
+import { generateActivationCode } from "@/utils/generate-activation-code";
+import { log } from "@/utils/log";
 
 const UserSchema = new Schema<IUser>({
   fullName: {
@@ -11,6 +15,7 @@ const UserSchema = new Schema<IUser>({
   },
   username: {
     type: Schema.Types.String,
+    unique: true,
     required: true,
   },
   email: {
@@ -45,7 +50,38 @@ const UserSchema = new Schema<IUser>({
 UserSchema.pre("save", function () {
   // eslint-disable-next-line ts/no-this-alias
   const user = this;
-  user.password = encryptPassword(user.password);
+  user.password = encrypt(user.password);
+  const activationCode = generateActivationCode();
+  user.activationCode = encrypt(activationCode);
+});
+
+UserSchema.post("save", async (doc, next) => {
+  try {
+    const user = doc;
+
+    log.info({ email: user.email }, "Send email activation");
+
+    const mailContent = await renderMailHtml("registration-success.ejs", {
+      username: user.username,
+      fullName: user.fullName,
+      email: user.email,
+      createdAt: user.createdAt,
+      activationLink: `${env.CLIENT_HOST}/auth/activation?code=${user.activationCode}`,
+    });
+
+    await sendMail({
+      from: "ACARA <no-reply@kjsr.or.id>",
+      to: user.email,
+      subject: "Aktifasi Akun - ACARA",
+      html: mailContent,
+    });
+  }
+  catch (error) {
+    log.error({ err: error }, "Error sending activation email");
+  }
+  finally {
+    next();
+  }
 });
 
 UserSchema.methods.toJSON = function () {
