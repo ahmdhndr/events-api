@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsc && tsc-alias",
+    "build": "tsc && tsc-alias && cp -r src/lib/mail/templates dist/lib/mail/templates",
     "type-check": "tsc --noEmit",
     "lint": "eslint \"src/**/*.+(ts|js)\"",
     "lint:fix": "eslint \"src/**/*.+(ts|js)\" --fix",
