@@ -72,7 +72,7 @@ UserSchema.post("save", async (doc, next) => {
     await sendMail({
       from: "ACARA <no-reply@kjsr.or.id>",
       to: user.email,
-      subject: "Aktifasi Akun - ACARA",
+      subject: "Aktivasi Akun - ACARA",
       html: mailContent,
     });
   }
