@@ -4,6 +4,7 @@ import type { IUser } from "@/shared/types/user";
 
 import env from "@/env";
 import { renderMailHtml, sendMail } from "@/lib/mail";
+import { ROLES } from "@/utils/constants";
 import encrypt from "@/utils/encrypt";
 import { generateActivationCode } from "@/utils/generate-activation-code";
 import { log } from "@/utils/log";
@@ -25,8 +26,8 @@ const UserSchema = new Schema<IUser>({
   },
   role: {
     type: Schema.Types.String,
-    enum: ["admin", "user"],
-    default: "user",
+    enum: [ROLES.ADMIN, ROLES.MEMBER],
+    default: ROLES.MEMBER,
   },
   password: {
     type: Schema.Types.String,
