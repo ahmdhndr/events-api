@@ -1,13 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
 
-import type { IUserToken } from "@/lib/jwt";
+import type { IReqUser } from "@/shared/types/auth";
 
 import { getUserData } from "@/lib/jwt";
 import { AppError } from "@/utils/app-error";
-
-export interface IReqUser extends Request {
-  user?: IUserToken;
-}
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const authorization = req.headers?.authorization;

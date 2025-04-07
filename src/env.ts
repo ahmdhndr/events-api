@@ -16,6 +16,10 @@ const YupEnvSchema = yup.object({
   EMAIL_SMTP_PASS: yup.string().required(),
   EMAIL_SMTP_SECURE: yup.boolean().required(),
   CLIENT_HOST: yup.string().required(),
+  CLOUDINARY_CLOUD_NAME: yup.string().required(),
+  CLOUDINARY_API_KEY: yup.string().required(),
+  CLOUDINARY_API_SECRET: yup.string().required(),
+  CLOUDINARY_URL: yup.string().required(),
 });
 
 export type env = yup.InferType<typeof YupEnvSchema>;

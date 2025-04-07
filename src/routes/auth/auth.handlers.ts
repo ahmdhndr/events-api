@@ -2,9 +2,10 @@ import type { Request, Response } from "express";
 
 import * as yup from "yup";
 
-import type { IReqUser } from "@/middlewares/auth-middleware";
+import type { IReqUser } from "@/shared/types/auth";
 
 import { users } from "@/db/schemas";
+import { handleError } from "@/lib/handle-error";
 import { generateToken } from "@/lib/jwt";
 import { AppError } from "@/utils/app-error";
 import { emailRegex } from "@/utils/email-regex";
@@ -55,26 +56,7 @@ export async function register(req: Request, res: Response) {
     });
   }
   catch (error) {
-    let statusCode = 500;
-    let status = "error";
-    let message = "Internal Server Error";
-
-    if (error instanceof AppError) {
-      statusCode = error.statusCode;
-      status = "failed";
-      message = error.message;
-    }
-    else if (error instanceof yup.ValidationError) {
-      statusCode = 400;
-      status = "failed";
-      message = error.message;
-    }
-
-    res.status(statusCode).json({
-      status,
-      message,
-      data: null,
-    });
+    handleError(error, res);
   }
 }
 
@@ -110,26 +92,7 @@ export async function login(req: Request, res: Response) {
     });
   }
   catch (error) {
-    let statusCode = 500;
-    let status = "error";
-    let message = "Internal Server Error";
-
-    if (error instanceof AppError) {
-      statusCode = error.statusCode;
-      status = "failed";
-      message = error.message;
-    }
-    else if (error instanceof yup.ValidationError) {
-      statusCode = 400;
-      status = "failed";
-      message = error.message;
-    }
-
-    res.status(statusCode).json({
-      status,
-      message,
-      data: null,
-    });
+    handleError(error, res);
   }
 }
 
@@ -145,26 +108,7 @@ export async function me(req: IReqUser, res: Response) {
     });
   }
   catch (error) {
-    let statusCode = 500;
-    let status = "error";
-    let message = "Internal Server Error";
-
-    if (error instanceof AppError) {
-      statusCode = error.statusCode;
-      status = "failed";
-      message = error.message;
-    }
-    else if (error instanceof yup.ValidationError) {
-      statusCode = 400;
-      status = "failed";
-      message = error.message;
-    }
-
-    res.status(statusCode).json({
-      status,
-      message,
-      data: null,
-    });
+    handleError(error, res);
   }
 }
 
@@ -183,25 +127,6 @@ export async function activation(req: Request, res: Response) {
     });
   }
   catch (error) {
-    let statusCode = 500;
-    let status = "error";
-    let message = "Internal Server Error";
-
-    if (error instanceof AppError) {
-      statusCode = error.statusCode;
-      status = "failed";
-      message = error.message;
-    }
-    else if (error instanceof yup.ValidationError) {
-      statusCode = 400;
-      status = "failed";
-      message = error.message;
-    }
-
-    res.status(statusCode).json({
-      status,
-      message,
-      data: null,
-    });
+    handleError(error, res);
   }
 }
