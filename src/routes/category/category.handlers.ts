@@ -2,7 +2,7 @@ import type { Response } from "express";
 
 import type { IReqUser } from "@/shared/types/auth";
 
-import { category } from "@/db/schemas";
+import { categories } from "@/db/schemas";
 import { categoryDAO } from "@/db/schemas/category.schema";
 import { handleError } from "@/lib/handle-error";
 import { AppError } from "@/utils/app-error";
@@ -10,7 +10,7 @@ import { AppError } from "@/utils/app-error";
 export async function create(req: IReqUser, res: Response) {
   try {
     await categoryDAO.validate(req.body);
-    const result = await category.create(req.body);
+    const result = await categories.create(req.body);
 
     res.status(201).json({
       status: "success",
@@ -46,13 +46,13 @@ export async function findAll(req: IReqUser, res: Response) {
       });
     }
 
-    const results = await category
+    const results = await categories
       .find(query)
       .limit(limit)
       .skip((page - 1) * limit)
       .sort({ createdAt: -1 })
       .exec();
-    const count = await category.countDocuments(query);
+    const count = await categories.countDocuments(query);
 
     res.json({
       status: "success",
@@ -73,7 +73,7 @@ export async function findAll(req: IReqUser, res: Response) {
 export async function findOne(req: IReqUser, res: Response) {
   try {
     const { id } = req.params;
-    const result = await category.findById(id);
+    const result = await categories.findById(id);
 
     res.json({
       status: "success",
@@ -89,7 +89,7 @@ export async function findOne(req: IReqUser, res: Response) {
 export async function update(req: IReqUser, res: Response) {
   try {
     const { id } = req.params;
-    const updatedCategory = await category.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedCategory = await categories.findByIdAndUpdate(id, req.body, { new: true });
     if (!updatedCategory) {
       throw new AppError("Category not found", 404);
     }
@@ -108,7 +108,7 @@ export async function update(req: IReqUser, res: Response) {
 export async function remove(req: IReqUser, res: Response) {
   try {
     const { id } = req.params;
-    const deletedCategory = await category.findByIdAndDelete(id);
+    const deletedCategory = await categories.findByIdAndDelete(id);
     if (!deletedCategory) {
       throw new AppError("Category not found", 404);
     }

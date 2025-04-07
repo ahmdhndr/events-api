@@ -7,6 +7,7 @@ import auth from "@/routes/auth/auth.route";
 import category from "@/routes/category/category.route";
 import index from "@/routes/index.route";
 import media from "@/routes/media/media.route";
+import region from "@/routes/region/region.route";
 
 const app = createApp();
 
@@ -15,6 +16,7 @@ const routes = [
   category,
   index,
   media,
+  region,
 ] as const;
 
 app.get("/", (req: Request, res: Response) => {
