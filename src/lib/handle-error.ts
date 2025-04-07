@@ -1,5 +1,6 @@
 import type { Response } from "express";
 
+import mongoose from "mongoose";
 import * as yup from "yup";
 
 import { AppError } from "@/utils/app-error";
@@ -14,10 +15,17 @@ export function handleError(error: unknown, res: Response) {
     status = "failed";
     message = error.message;
   }
-  else if (error instanceof yup.ValidationError) {
+
+  if (error instanceof yup.ValidationError) {
     statusCode = 400;
     status = "failed";
     message = error.message;
+  }
+
+  if (error instanceof mongoose.Error) {
+    statusCode = 400;
+    status = "failed";
+    message = `${error.name}: ${error.message}`;
   }
 
   res.status(statusCode).json({

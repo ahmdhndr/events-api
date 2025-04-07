@@ -2,9 +2,9 @@ import type { NextFunction, Request, Response } from "express";
 
 import env from "@/env";
 import { AppError } from "@/utils/app-error";
-import { INTERNAL_SERVER_ERROR } from "@/utils/http-status-phrases";
+import { INTERNAL_SERVER_ERROR } from "@/utils/http-status-codes";
 
-export function onError(err: Error, req: Request, res: Response, _next: NextFunction) {
+export function onError(err: Error, _req: Request, res: Response, _next: NextFunction) {
   let customError = err;
 
   // Jika error bukan instance dari AppError, buat error baru

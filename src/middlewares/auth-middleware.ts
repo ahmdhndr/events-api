@@ -1,5 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 
+import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+
 import type { IReqUser } from "@/shared/types/auth";
 
 import { getUserData } from "@/lib/jwt";
@@ -18,13 +20,26 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     throw new AppError("Unauthorized", 403);
   }
 
-  const user = getUserData(token);
+  try {
+    const user = getUserData(token);
 
-  if (!user) {
-    throw new AppError("Unauthorized", 403);
+    if (!user) {
+      throw new AppError("Unauthorized", 403);
+    }
+
+    (req as IReqUser).user = user;
+
+    next();
   }
+  catch (error) {
+    if (error instanceof TokenExpiredError) {
+      return next(new AppError("Token has expired", 401));
+    }
 
-  (req as IReqUser).user = user;
+    if (error instanceof JsonWebTokenError) {
+      return next(new AppError("Invalid token", 401));
+    }
 
-  next();
+    return next(error);
+  }
 }
