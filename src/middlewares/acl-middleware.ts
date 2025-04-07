@@ -9,7 +9,7 @@ export default (roles: string[]) => {
     if (!role || !roles.includes(role)) {
       res.status(403).json({
         status: "failed",
-        message: "Access denied",
+        message: "Unauthorized",
         data: null,
       });
     }

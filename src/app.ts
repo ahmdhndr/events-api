@@ -4,14 +4,16 @@ import createApp from "@/lib/create-app";
 import notFound from "@/middlewares/not-found";
 import { onError } from "@/middlewares/on-error";
 import auth from "@/routes/auth/auth.route";
+import category from "@/routes/category/category.route";
 import index from "@/routes/index.route";
 import media from "@/routes/media/media.route";
 
 const app = createApp();
 
 const routes = [
-  index,
   auth,
+  category,
+  index,
   media,
 ] as const;
 
