@@ -3,6 +3,7 @@ import path from "node:path";
 import nodemailer from "nodemailer";
 
 import env from "@/env";
+import { toGMT7 } from "@/utils/to-gmt-7";
 
 const transporter = nodemailer.createTransport({
   host: env.EMAIL_SMTP_HOST,
@@ -35,7 +36,10 @@ export async function sendMail({ from, to, subject, html }: ISendMail) {
 export async function renderMailHtml(template: string, data: any): Promise<string> {
   const content = await ejs.renderFile(
     path.join(__dirname, `templates/${template}`),
-    data,
+    {
+      ...data,
+      toGMT7,
+    },
   );
 
   return content as string;

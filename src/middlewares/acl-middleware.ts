@@ -1,6 +1,6 @@
 import type { NextFunction, Response } from "express";
 
-import type { IReqUser } from "./auth-middleware";
+import type { IReqUser } from "@/shared/types/auth";
 
 export default (roles: string[]) => {
   return (req: IReqUser, res: Response, next: NextFunction) => {

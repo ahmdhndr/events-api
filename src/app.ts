@@ -5,12 +5,14 @@ import notFound from "@/middlewares/not-found";
 import { onError } from "@/middlewares/on-error";
 import auth from "@/routes/auth/auth.route";
 import index from "@/routes/index.route";
+import media from "@/routes/media/media.route";
 
 const app = createApp();
 
 const routes = [
   index,
   auth,
+  media,
 ] as const;
 
 app.get("/", (req: Request, res: Response) => {
