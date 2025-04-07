@@ -26,3 +26,5 @@ lerna-debug.log*
 .DS_Store
 dist
 .qodo
+test_suite_analysis/
+managed_context/
