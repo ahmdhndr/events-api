@@ -5,6 +5,7 @@ import notFound from "@/middlewares/not-found";
 import { onError } from "@/middlewares/on-error";
 import auth from "@/routes/auth/auth.route";
 import category from "@/routes/category/category.route";
+import event from "@/routes/event/event.route";
 import index from "@/routes/index.route";
 import media from "@/routes/media/media.route";
 import region from "@/routes/region/region.route";
@@ -14,6 +15,7 @@ const app = createApp();
 const routes = [
   auth,
   category,
+  event,
   index,
   media,
   region,

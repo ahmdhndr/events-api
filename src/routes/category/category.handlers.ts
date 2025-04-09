@@ -108,7 +108,7 @@ export async function update(req: IReqUser, res: Response) {
 export async function remove(req: IReqUser, res: Response) {
   try {
     const { id } = req.params;
-    const deletedCategory = await categories.findByIdAndDelete(id);
+    const deletedCategory = await categories.findByIdAndDelete(id, { new: true });
     if (!deletedCategory) {
       throw new AppError("Category not found", 404);
     }
