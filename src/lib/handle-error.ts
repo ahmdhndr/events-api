@@ -28,7 +28,13 @@ export function handleError(error: unknown, res: Response) {
     message = `${error.name}: ${error.message}`;
   }
 
-  res.status(statusCode).json({
+  if (error instanceof mongoose.Error.CastError) {
+    statusCode = 400;
+    status = "failed";
+    message = `${error.name}: Cast to ObjectId failed`;
+  }
+
+  return res.status(statusCode).json({
     status,
     message,
     data: null,
