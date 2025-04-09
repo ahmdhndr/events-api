@@ -8,6 +8,7 @@ import { ROLES } from "@/utils/constants";
 import encrypt from "@/utils/encrypt";
 import { generateActivationCode } from "@/utils/generate-activation-code";
 import { log } from "@/utils/log";
+import { toGMT7 } from "@/utils/to-gmt-7";
 
 const UserSchema = new Schema<IUser>({
   fullName: {
@@ -68,6 +69,8 @@ UserSchema.post("save", async (doc, next) => {
       email: user.email,
       createdAt: user.createdAt,
       activationLink: `${env.CLIENT_HOST}/auth/activation?code=${user.activationCode}`,
+      logoUrl: `${env.CLIENT_HOST}/images/general/logo.png`,
+      toGMT7,
     });
 
     await sendMail({
