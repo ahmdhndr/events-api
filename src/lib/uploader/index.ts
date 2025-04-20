@@ -7,6 +7,7 @@ cloudinary.config({
   cloud_name: env.CLOUDINARY_CLOUD_NAME,
   api_key: env.CLOUDINARY_API_KEY,
   api_secret: env.CLOUDINARY_API_SECRET,
+  timeout: 60000,
 });
 
 type SingleFile = Express.Multer.File;
@@ -15,8 +16,6 @@ type MultipleFile = Express.Multer.File[];
 function toDataUrl(file: SingleFile) {
   // eslint-disable-next-line node/prefer-global/buffer
   const b64 = Buffer.from(file.buffer).toString("base64");
-  console.log("BASE64\n", b64);
-  console.log("MIMETYPE\n", file.mimetype);
   const dataUrl = `data:${file.mimetype};base64,${b64}`;
   return dataUrl;
 }
