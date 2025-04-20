@@ -34,6 +34,12 @@ export function handleError(error: unknown, res: Response) {
     message = `${error.name}: Cast to ObjectId failed`;
   }
 
+  if (error instanceof AggregateError) {
+    statusCode = 504;
+    status = "error";
+    message = `API not responding. Try again later.`;
+  }
+
   return res.status(statusCode).json({
     status,
     message,
